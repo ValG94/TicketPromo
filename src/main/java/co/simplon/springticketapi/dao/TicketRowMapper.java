@@ -12,6 +12,7 @@ public class TicketRowMapper implements RowMapper<Ticket> {
 
     @Override
     public Ticket mapRow(ResultSet resultSet, int i) throws SQLException {
-        return new Ticket(resultSet.getLong("id"), resultSet.getTimestamp("date").toLocalDateTime());
+        //return new Ticket(resultSet.getLong("id"), resultSet.getTimestamp("date").toLocalDateTime());
+        return null;
     }
 }

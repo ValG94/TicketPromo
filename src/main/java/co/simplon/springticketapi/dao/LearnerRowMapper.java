@@ -15,4 +15,6 @@ public class LearnerRowMapper implements RowMapper<Learner> {
         // A vous de jouer
         return new Learner();
     }
+
+
 }

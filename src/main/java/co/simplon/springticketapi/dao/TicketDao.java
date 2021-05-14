@@ -4,6 +4,7 @@ import co.simplon.springticketapi.model.Ticket;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
@@ -23,6 +24,12 @@ public class TicketDao implements Dao<Ticket> {
         return jdbcTemplate.queryForObject("select * from ticket where id = ?", ticketRowMapper, id);
     }
 
+    public Ticket post(Ticket ticket){
+        jdbcTemplate.execute("INSERT INTO ticket (date, description) VALUES ('" + ticket.getDate() + "','" + ticket.getDescription() + "')");
+        return ticket;
+    }
+
+
     @Override
     public List<Ticket> getAll() {
         return jdbcTemplate.query("select * from ticket", ticketRowMapper);
@@ -30,7 +37,7 @@ public class TicketDao implements Dao<Ticket> {
 
     @Override
     public void save(Ticket ticket) {
-        // A vous de jouer
+        //à vous de jouer
     }
 
     @Override
