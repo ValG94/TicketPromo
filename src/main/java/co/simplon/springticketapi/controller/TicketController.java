@@ -21,7 +21,7 @@ public class TicketController {
         this.ticketDao = ticketDao;
         this.jdbcTemplate = jdbcTemplate;
     }
-
+    //Récupération de tous les tickets émis
     @GetMapping
     public List<Ticket> getAllTickets() throws SQLException {
         //return ticketDao.getAll(); permet de faire toutes les instructions ci-dessous
@@ -38,12 +38,12 @@ public class TicketController {
             // Tant que j'ai des tickets, je les ajoute dans ma BDD
 
             while (set.next()) {
-                ticketsList.add(new Ticket(set.getLong("id"),
+                ticketsList.add(new Ticket(set.getLong("number_ticket"),
                         set.getDate("date").toLocalDate(),
                         set.getString("description"),
                         set.getString("student"),
                         set.getBoolean("resolved"),
-                        set.getString("promo_Name")));
+                        set.getString("promo_name")));
             }
             set.close();
         } catch (SQLException exception) {
@@ -52,6 +52,7 @@ public class TicketController {
         return ticketsList;
     }
 
+    //Récupération des tickets émis grâce à leur ID
     @GetMapping("/{id}")
     public Ticket getTicketByID(@PathVariable Long id) throws SQLException {
         // Je me connecte à la BDD
@@ -84,15 +85,16 @@ public class TicketController {
         return ticketDao.get(id);
     }
 
+    //Ajout d'un nouveau ticket avec POST
     @PostMapping
     public Ticket postTicket(@RequestBody Ticket ticket) throws SQLException {
         // Je me connecte à la BDD
         Connection dbConnection = jdbcTemplate.getDataSource().getConnection();
-        String insertCmd = "INSERT INTO ticket (date, student, description, resolved, promo_name) VALUES(?, ?, ?, ?);";
+        String insertCmd = "INSERT INTO ticket (student, description, resolved, promo_name) VALUES(?, ?, ?, ?);";
         try (PreparedStatement stmt = dbConnection.prepareStatement(insertCmd, Statement.RETURN_GENERATED_KEYS)) {
             //Je prépare ma requête
-            stmt.setString(1, ticket.getDescription());
-            stmt.setString(2, ticket.getStudent());
+            stmt.setString(1, ticket.getStudent());
+            stmt.setString(2, ticket.getDescription());
             stmt.setBoolean(3, ticket.getResolved());
             stmt.setString(4, ticket.getPromoName());
 
@@ -111,11 +113,12 @@ public class TicketController {
     public Ticket putTicket(@RequestBody Ticket ticket) throws SQLException {
         //Je me connecte à la BDD
         Connection dbConnection = jdbcTemplate.getDataSource().getConnection();
-        String deleteCmd = "DELETE FROM ticket where resolved VALUE (?, ?)";
+        String deleteCmd = "UPDATE ticket SET resolved = ? where number_ticket = ?";
         try (PreparedStatement delcmd = dbConnection.prepareStatement(deleteCmd, Statement.RETURN_GENERATED_KEYS)) {
             //Je prépare ma requête pour effacer les tickets traités
             delcmd.setBoolean(1, ticket.getResolved());
-            delcmd.setString(2, ticket.getStudent());
+            delcmd.setLong(2, ticket.getId());
+            //delcmd.setString(2, ticket.getStudent());
 
             // Exécute la requête
             delcmd.execute();
