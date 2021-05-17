@@ -21,7 +21,10 @@ public class TicketController {
         this.ticketDao = ticketDao;
         this.jdbcTemplate = jdbcTemplate;
     }
-    //Récupération de tous les tickets émis
+
+    //J'ai besoin de me connecter à la BDD
+    // J'ai besoin de faire une requête SQL pour lister les ticketsRécupération de tous les tickets émis
+    // J'ai besoin de mettre les résultats dans une liste
     @GetMapping
     public List<Ticket> getAllTickets() throws SQLException {
         //return ticketDao.getAll(); permet de faire toutes les instructions ci-dessous
@@ -35,8 +38,8 @@ public class TicketController {
         try (PreparedStatement statement = dbConnection.prepareStatement(selectReq)) {
             //Execution de la requête
             ResultSet set = statement.executeQuery();
-            // Tant que j'ai des tickets, je les ajoute dans ma BDD
 
+            // Tant que j'ai des tickets, je les ajoute dans ma BDD
             while (set.next()) {
                 ticketsList.add(new Ticket(set.getLong("number_ticket"),
                         set.getDate("date").toLocalDate(),
@@ -82,7 +85,7 @@ public class TicketController {
         }
 
         // Je retourne la liste des tickets
-        return ticketDao.get(id);
+        return ticket;
     }
 
     //Ajout d'un nouveau ticket avec POST
