@@ -42,6 +42,10 @@ public class Ticket {
         return promoName;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "Ticket{" +

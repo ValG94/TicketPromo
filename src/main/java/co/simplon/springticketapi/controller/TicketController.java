@@ -24,18 +24,19 @@ public class TicketController {
 
     //J'ai besoin de me connecter à la BDD
     // J'ai besoin de faire une requête SQL pour lister les ticketsRécupération de tous les tickets émis
-    // J'ai besoin de mettre les résultats dans une liste
+    // J'ai besoin de mettre les résultats dans une liste et de faire un tri sur les tickets résolus ou pas
     @GetMapping
-    public List<Ticket> getAllTickets() throws SQLException {
+    public List<Ticket> getAllTickets(@RequestParam boolean resolved) throws SQLException {
         //return ticketDao.getAll(); permet de faire toutes les instructions ci-dessous
 
         Connection dbConnection = jdbcTemplate.getDataSource().getConnection();
 
         //Préparation de ma requête
         List<Ticket> ticketsList = new ArrayList<>();
-        String selectReq = "SELECT * FROM ticket";
+        String selectReq = "SELECT * FROM ticket where resolved = ?";
 
         try (PreparedStatement statement = dbConnection.prepareStatement(selectReq)) {
+            statement.setBoolean(1, resolved);
             //Execution de la requête
             ResultSet set = statement.executeQuery();
 
@@ -105,7 +106,10 @@ public class TicketController {
             stmt.execute();
 
             //Récupération de l'ID généré
-
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                ticket.setId(rs.getLong(1));
+            }
 
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -116,15 +120,15 @@ public class TicketController {
     }
 
     //Mise à jour des tickets une fois qu'ils sont traités
-    @PutMapping
-    public Ticket putTicket(@RequestBody Ticket ticket) throws SQLException {
+    @PutMapping("/{id}")
+    public void putTicket(@PathVariable Long id) throws SQLException {
+
         //Je me connecte à la BDD
         Connection dbConnection = jdbcTemplate.getDataSource().getConnection();
-        String deleteCmd = "UPDATE ticket SET resolved = ? where number_ticket = ?";
+        String deleteCmd = "UPDATE ticket SET resolved = true where number_ticket = ?";
         try (PreparedStatement delcmd = dbConnection.prepareStatement(deleteCmd, Statement.RETURN_GENERATED_KEYS)) {
             //Je prépare ma requête pour effacer les tickets traités
-            delcmd.setBoolean(1, ticket.getResolved());
-            delcmd.setLong(2, ticket.getId());
+            delcmd.setLong(1, id);
             //delcmd.setString(2, ticket.getStudent());
 
             // Exécute la requête
@@ -132,6 +136,5 @@ public class TicketController {
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-        return ticket;
     }
 }
