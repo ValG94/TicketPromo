@@ -103,6 +103,10 @@ public class TicketController {
 
             //Exécute la requête
             stmt.execute();
+
+            //Récupération de l'ID généré
+
+
         } catch (SQLException exception) {
             exception.printStackTrace();
         }

@@ -13,7 +13,7 @@ public class LearnerRowMapper implements RowMapper<Learner> {
     @Override
     public Learner mapRow(ResultSet resultSet, int i) throws SQLException {
         // A vous de jouer
-        return new Learner();
+        return null;
     }
 
 
